@@ -78,9 +78,15 @@ public class AuthController {
                 .collect(Collectors.toList());
 
         RefreshToken refreshToken = refreshTokenService.createRefreshToken(userDetails.getId());
+        User user = userRepository.findByUsername(userDetails.getUsername()).orElseThrow(() -> new UserNotFoundException("user not found"));
 
-        return ResponseEntity.ok(new JwtResponse(jwt, refreshToken.getToken(), userDetails.getId(),
-                userDetails.getUsername(), userDetails.getEmail(), roles));
+        return ResponseEntity.ok(new JwtResponse(
+                user.getId(),
+                user.getUsername(),
+                user.getNom(),
+                user.getPrenom(), user.getEmail(), user.getDateBirth(), roles,
+                jwt, refreshToken.getToken()
+        ));
     }
 
     @PostMapping("/signup")
